@@ -1,5 +1,16 @@
 import { google } from 'googleapis'
 import { NextRequest } from 'next/server'
+import type { Readable } from 'stream'
+
+function nodeStreamToWeb(stream: Readable): ReadableStream<Uint8Array> {
+  return new ReadableStream({
+    start(controller) {
+      stream.on('data', (chunk) => controller.enqueue(chunk))
+      stream.on('end', () => controller.close())
+      stream.on('error', (err) => controller.error(err))
+    }
+  })
+}
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id')
@@ -26,7 +37,10 @@ export async function GET(req: NextRequest) {
       { responseType: 'stream' }
     )
 
-    return new Response(streamRes.data as any, {
+    // Конвертируем Node Readable в Web ReadableStream
+    const webStream = nodeStreamToWeb(streamRes.data as Readable)
+
+    return new Response(webStream, {
       headers: {
         'Content-Type': mimeType,
         'Cache-Control': 'no-store',

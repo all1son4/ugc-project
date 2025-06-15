@@ -20,6 +20,8 @@ export const getGoogleDriveMedia = async () => {
   return res.data.files || []
 }
 
-export default {
+const googleService = {
     getGoogleDriveMedia,
-}
+  }
+  
+  export default googleService

@@ -75,4 +75,6 @@ export const MediaCard = memo(({ item, isPlaying, playedOnce, onPlay }: {
   )
 })
 
+MediaCard.displayName = 'MediaCard'
+
 export default MediaCard
