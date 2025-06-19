@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { MediaGrid } from "@/components";
+import { googleService } from "@/services/"; // импортируем твой сервис
 
 type VideoFile = {
   id: string;
@@ -15,8 +16,7 @@ export default function Home() {
   useEffect(() => {
     const fetchMedia = async () => {
       try {
-        const res = await fetch("/api/media"); // обращаемся к API-роуту
-        const data = await res.json();
+        const data = await googleService.getGoogleDriveMedia(); // вызываем функцию из сервиса
         console.log(data);
         setMedia(data);
       } catch (error) {

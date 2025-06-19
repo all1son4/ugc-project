@@ -27,18 +27,20 @@ export async function GET(req: NextRequest) {
   const drive = google.drive({ version: "v3", auth });
 
   try {
-    const fileMeta = await drive.files.get({ fileId: id, fields: "mimeType,size" });
+    const fileMeta = await drive.files.get({
+      fileId: id,
+      fields: "mimeType,size",
+    });
     const mimeType = fileMeta.data.mimeType || "application/octet-stream";
     const fileSize = parseInt(fileMeta.data.size || "0", 10);
-
     const range = req.headers.get("range");
 
     if (range && fileSize) {
       const bytesPrefix = "bytes=";
       if (range.startsWith(bytesPrefix)) {
-        const rangeParts = range.substring(bytesPrefix.length).split("-");
-        const start = parseInt(rangeParts[0], 10);
-        const end = rangeParts[1] ? parseInt(rangeParts[1], 10) : fileSize - 1;
+        const [startStr, endStr] = range.slice(bytesPrefix.length).split("-");
+        const start = parseInt(startStr, 10);
+        const end = endStr ? parseInt(endStr, 10) : fileSize - 1;
         const chunkSize = end - start + 1;
 
         const streamRes = await drive.files.get(
@@ -63,13 +65,13 @@ export async function GET(req: NextRequest) {
             "Accept-Ranges": "bytes",
             "Content-Length": chunkSize.toString(),
             "Content-Type": mimeType,
-            "Cache-Control": "no-store",
+            "Cache-Control": "public, max-age=3600, must-revalidate",
           },
         });
       }
     }
 
-    // Fallback: отдаём весь файл
+    // Без range — отдаём всё
     const streamRes = await drive.files.get(
       { fileId: id, alt: "media" },
       { responseType: "stream" },
@@ -83,7 +85,7 @@ export async function GET(req: NextRequest) {
         "Content-Length": fileSize.toString(),
         "Content-Type": mimeType,
         "Accept-Ranges": "bytes",
-        "Cache-Control": "no-store",
+        "Cache-Control": "public, max-age=3600, must-revalidate",
       },
     });
   } catch (err) {

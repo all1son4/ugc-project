@@ -38,7 +38,7 @@ export const MediaCard = memo(
               config={{
                 file: {
                   attributes: {
-                    preload: "none",
+                    preload: "metadata",
                     poster: item.thumbnailLink,
                     playsInline: true,
                   },
