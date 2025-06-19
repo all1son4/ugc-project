@@ -1,6 +1,4 @@
-import googleService from './google';
+import googleService from "./google";
 
 // Export all services
-export {
-    googleService,
-};
+export { googleService };

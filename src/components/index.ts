@@ -1,5 +1,3 @@
 import MediaGrid from "./MediaGrid";
 
-export {
-    MediaGrid
-}
+export { MediaGrid };

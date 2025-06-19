@@ -2,4 +2,4 @@ import MediaGrid from "./MediaGrid";
 
 export * from "./MediaGrid.types";
 
-export default MediaGrid
+export default MediaGrid;
