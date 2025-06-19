@@ -14,9 +14,7 @@ function nodeStreamToWeb(stream: Readable): ReadableStream<Uint8Array> {
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id");
-  if (!id) {
-    return new Response("Missing ID", { status: 400 });
-  }
+  if (!id) return new Response("Missing ID", { status: 400 });
 
   const auth = new google.auth.GoogleAuth({
     credentials: {
@@ -29,20 +27,62 @@ export async function GET(req: NextRequest) {
   const drive = google.drive({ version: "v3", auth });
 
   try {
-    const fileMeta = await drive.files.get({ fileId: id, fields: "mimeType" });
+    const fileMeta = await drive.files.get({ fileId: id, fields: "mimeType,size" });
     const mimeType = fileMeta.data.mimeType || "application/octet-stream";
+    const fileSize = parseInt(fileMeta.data.size || "0", 10);
 
+    const range = req.headers.get("range");
+
+    if (range && fileSize) {
+      const bytesPrefix = "bytes=";
+      if (range.startsWith(bytesPrefix)) {
+        const rangeParts = range.substring(bytesPrefix.length).split("-");
+        const start = parseInt(rangeParts[0], 10);
+        const end = rangeParts[1] ? parseInt(rangeParts[1], 10) : fileSize - 1;
+        const chunkSize = end - start + 1;
+
+        const streamRes = await drive.files.get(
+          {
+            fileId: id,
+            alt: "media",
+          },
+          {
+            responseType: "stream",
+            headers: {
+              Range: `bytes=${start}-${end}`,
+            },
+          },
+        );
+
+        const webStream = nodeStreamToWeb(streamRes.data as Readable);
+
+        return new Response(webStream, {
+          status: 206,
+          headers: {
+            "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+            "Accept-Ranges": "bytes",
+            "Content-Length": chunkSize.toString(),
+            "Content-Type": mimeType,
+            "Cache-Control": "no-store",
+          },
+        });
+      }
+    }
+
+    // Fallback: отдаём весь файл
     const streamRes = await drive.files.get(
       { fileId: id, alt: "media" },
       { responseType: "stream" },
     );
 
-    // Конвертируем Node Readable в Web ReadableStream
     const webStream = nodeStreamToWeb(streamRes.data as Readable);
 
     return new Response(webStream, {
+      status: 200,
       headers: {
+        "Content-Length": fileSize.toString(),
         "Content-Type": mimeType,
+        "Accept-Ranges": "bytes",
         "Cache-Control": "no-store",
       },
     });

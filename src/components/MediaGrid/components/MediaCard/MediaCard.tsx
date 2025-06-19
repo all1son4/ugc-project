@@ -40,7 +40,6 @@ export const MediaCard = memo(
                   attributes: {
                     preload: "none",
                     poster: item.thumbnailLink,
-                    muted: true,
                     playsInline: true,
                   },
                 },
