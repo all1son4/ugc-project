@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ReactPlayer from "react-player";
+import dynamic from "next/dynamic";
+
 import { MediaGrid } from "@/components";
 import { googleService } from "@/services/"; // импортируем твой сервис
 
@@ -12,6 +15,10 @@ type VideoFile = {
 
 export default function Home() {
   const [media, setMedia] = useState<VideoFile[]>([]);
+
+  const ClientOnlyPlayer = dynamic(() => import("react-player"), {
+    ssr: false,
+  });
 
   useEffect(() => {
     const fetchMedia = async () => {
@@ -35,13 +42,16 @@ export default function Home() {
       ) : (
         <p>Загрузка видео...</p>
       )}
-      <video controls className="w-full max-w-xs rounded-2xl shadow-lg">
-        <source
-          src="https://res.cloudinary.com/daeqbpscy/video/upload/v1750409980/dsonugcqfzeqe0d51aee.mov"
-          type="video/mp4"
+      <div className="w-full max-w-sm aspect-[9/16] rounded-2xl shadow-lg overflow-hidden">
+        <ClientOnlyPlayer
+          url="https://res.cloudinary.com/daeqbpscy/video/upload/v1750409980/dsonugcqfzeqe0d51aee.mov"
+          controls={false}
+          playing={true}
+          width="100%"
+          height="100%"
+          light={`data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='720' height='1280' viewBox='0 0 720 1280'><style>text{font-family:sans-serif;fill:white;}</style><rect width='100%' height='100%' fill='black'/><circle cx='360' cy='640' r='60' fill='white'/><polygon points='345,610 390,640 345,670' fill='black'/><text x='50%' y='740' text-anchor='middle' font-size='28'>Нажмите для воспроизведения</text></svg>`}
         />
-        Your browser does not support the video tag.
-      </video>
+      </div>
     </div>
   );
 }
