@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ReactPlayer from "react-player";
 import dynamic from "next/dynamic";
 
 import { MediaGrid } from "@/components";
