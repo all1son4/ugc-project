@@ -1,4 +1,6 @@
+import { CloudinaryResource } from "@/types";
+
 export interface VideoItemProps {
-  video: any;
+  video: CloudinaryResource;
   index: number;
 }

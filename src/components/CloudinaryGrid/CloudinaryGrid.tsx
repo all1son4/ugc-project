@@ -3,14 +3,7 @@ import axios from "axios";
 
 import { Spinner } from "@/components";
 import VideoItem from "./components/VideoItem";
-
-type CloudinaryResource = {
-  public_id: string;
-  format: string;
-  url: string;
-  secure_url: string;
-  resource_type: string;
-};
+import { CloudinaryResource } from "@/types";
 
 export const CloudinaryGrid = () => {
   const [videos, setVideos] = useState<CloudinaryResource[]>([]);

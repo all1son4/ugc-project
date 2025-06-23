@@ -2,6 +2,7 @@
 
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryResource } from "@/types";
 
 // Настройка Cloudinary
 cloudinary.config({
@@ -10,20 +11,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET!,
 });
 
-// Тип ресурса
-type CloudinaryResource = {
-  asset_id: string;
-  public_id: string;
-  format: string;
-  width: number;
-  height: number;
-  created_at: string;
-  url: string;
-  secure_url: string;
-  [key: string]: any;
-};
-
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const folder = process.env.CLOUDINARY_FOLDER || "";
     const search = `folder:${folder}/*`;
