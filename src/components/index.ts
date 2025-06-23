@@ -1,3 +1,4 @@
-import MediaGrid from "./MediaGrid";
+import CloudinaryGrid from "./CloudinaryGrid";
+import Spinner from "./Spinner";
 
-export { MediaGrid };
+export { CloudinaryGrid, Spinner };
