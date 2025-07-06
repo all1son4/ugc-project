@@ -24,3 +24,9 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.masonry-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
