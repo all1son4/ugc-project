@@ -45,7 +45,7 @@ export const CloudinaryGrid = () => {
   return (
     <>
       {/* 📱 Слайдер только на мобильных */}
-      <div className="sm:hidden w-full px-4">
+      <div className="sm:hidden w-full">
         <Swiper spaceBetween={32} slidesPerView="auto" className="w-full">
           {videos.map((video, index) => (
             <SwiperSlide
